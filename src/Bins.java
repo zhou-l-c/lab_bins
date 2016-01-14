@@ -37,11 +37,37 @@ public class Bins {
         PriorityQueue<Disk> pq = new PriorityQueue<Disk>();
         pq.add(new Disk(0));
 
-        int diskId = 1;
         int total = 0;
-        for (Integer size : data) {
+        total = addToDisk(total, pq, data);
+        
+        System.out.println("total size = " + total / 1000000.0 + "GB");
+        System.out.println();
+        
+        printQueue(pq, "");
+
+        Collections.sort(data, Collections.reverseOrder());
+        pq.add(new Disk(0));
+
+        total = addToDisk( total, pq, data);
+        
+        System.out.println();
+        
+        printQueue(pq,"decreasing ");
+    }
+    public static void printQueue(PriorityQueue<Disk> pq, String word) {
+    	System.out.println();
+        System.out.println("worst-fit " + word + "method");
+        System.out.println("number of pq used: " + pq.size());
+    	while (!pq.isEmpty()) {
+    		System.out.println(pq.poll());
+    	}
+    	System.out.println();
+    }
+    public static int addToDisk(int total, PriorityQueue<Disk> pq, List<Integer> data) {
+    	int diskId = 1;
+    	for (Integer size : data) {
             Disk d = pq.peek();
-            if (d.freeSpace() > size) {
+            if (d.freeSpace() >= size) { //one has = one does not, don't know how to fix
                 pq.poll();
                 d.add(size);
                 pq.add(d);
@@ -53,40 +79,6 @@ public class Bins {
             }
             total += size;
         }
-
-        System.out.println("total size = " + total / 1000000.0 + "GB");
-        System.out.println();
-        System.out.println("worst-fit method");
-        System.out.println("number of pq used: " + pq.size());
-        while (!pq.isEmpty()) {
-            System.out.println(pq.poll());
-        }
-        System.out.println();
-
-        Collections.sort(data, Collections.reverseOrder());
-        pq.add(new Disk(0));
-
-        diskId = 1;
-        for (Integer size : data) {
-            Disk d = pq.peek();
-            if (d.freeSpace() >= size) {
-                pq.poll();
-                d.add(size);
-                pq.add(d);
-            } else {
-                Disk d2 = new Disk(diskId);
-                diskId++;
-                d2.add(size);
-                pq.add(d2);
-            }
-        }
-
-        System.out.println();
-        System.out.println("worst-fit decreasing method");
-        System.out.println("number of pq used: " + pq.size());
-        while (!pq.isEmpty()) {
-            System.out.println(pq.poll());
-        }
-        System.out.println();
+    	return total;
     }
 }
